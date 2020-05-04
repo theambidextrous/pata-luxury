@@ -1,0 +1,36 @@
+[01-May-2020 07:27:48 America/Boise] PHP Parse error:  syntax error, unexpected '$res' (T_VARIABLE) in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php on line 28
+[01-May-2020 07:30:57 America/Boise] PHP Fatal error:  Uncaught Error: Function name must be a string in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php:33
+Stack trace:
+#0 /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php(96): C2B->CreateToken()
+#1 {main}
+  thrown in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php on line 33
+[01-May-2020 07:34:31 America/Boise] PHP Fatal error:  Uncaught Error: Function name must be a string in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php:33
+Stack trace:
+#0 /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php(43): C2B->CreateToken()
+#1 /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php(97): C2B->RegisterUrl()
+#2 {main}
+  thrown in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php on line 33
+[01-May-2020 07:37:16 America/Boise] PHP Fatal error:  Uncaught Error: Function name must be a string in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php:30
+Stack trace:
+#0 /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php(87): C2B->CreateToken()
+#1 {main}
+  thrown in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php on line 30
+[01-May-2020 07:37:49 America/Boise] PHP Fatal error:  Uncaught Error: Function name must be a string in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php:30
+Stack trace:
+#0 /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php(87): C2B->CreateToken()
+#1 {main}
+  thrown in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php on line 30
+[01-May-2020 07:38:58 America/Boise] PHP Warning:  Missing argument 6 for C2B::__construct(), called in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php on line 86 and defined in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php on line 14
+[01-May-2020 07:38:58 America/Boise] PHP Notice:  Undefined variable: billrefnumber in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php on line 20
+[01-May-2020 07:38:59 America/Boise] PHP Notice:  Undefined variable: json_decode in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php on line 32
+[01-May-2020 07:38:59 America/Boise] PHP Fatal error:  Uncaught Error: Function name must be a string in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php:32
+Stack trace:
+#0 /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php(89): C2B->CreateToken()
+#1 {main}
+  thrown in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php on line 32
+[01-May-2020 07:40:07 America/Boise] PHP Notice:  Undefined variable: json_decode in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php on line 32
+[01-May-2020 07:40:07 America/Boise] PHP Fatal error:  Uncaught Error: Function name must be a string in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php:32
+Stack trace:
+#0 /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php(90): C2B->CreateToken()
+#1 {main}
+  thrown in /home2/fazalbou/public_html/patashopdir/mpes/test/c2b.php on line 32
