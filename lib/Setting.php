@@ -250,7 +250,19 @@ class Setting{
         $res = $statement->fetch(PDO::FETCH_ASSOC);
         return $res;
     }
-
+    function FindAddress(){
+        $util = new Util();
+        $statement = $this->Connection->prepare("SELECT SiteAddress FROM `p_setting` LIMIT 1");
+        $statement->execute();
+        $rs = $statement->errorInfo();
+        if($rs[0] != '00000'){
+            $util->log('File: '.__FILE__.' at line '.__LINE__.' Err:- '.json_encode($rs));
+            throw new Exception('Error occured. Packaging Center Address Not Found. Contact Admins');
+            return false;
+        }
+        $res = $statement->fetch(PDO::FETCH_ASSOC);
+        return $res['SiteAddress'];
+    }
     function isAvailable(){
         $util = new Util();
         $statement = $this->Connection->prepare("SELECT count(*) as cnt FROM `p_setting`");

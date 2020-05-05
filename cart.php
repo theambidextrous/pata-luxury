@@ -209,6 +209,7 @@
                                         try{
                                             $calc = new ShippingCalc($conn);
                                             $util->Show($calc->Payload());
+                                            $util->Show($calc->SendyIt(455));
                                         }catch(Exception $e){
                                             print $e->getMessage();
                                         }

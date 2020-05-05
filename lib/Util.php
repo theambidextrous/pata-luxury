@@ -768,15 +768,34 @@ class Util{
     function ComputeDistance(){
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_URL, MAP_ENDPOINT . 'origins='.urlencode($this->pickup).'&destinations='.urlencode($this->dropoff).'&key='.$this->maps_key
-        );
+        curl_setopt($ch, CURLOPT_URL, MAP_ENDPOINT . 'origins='.urlencode($this->pickup).'&destinations='.urlencode($this->dropoff).'&key='.$this->maps_key);
         $content = curl_exec($ch);
         $resp = json_decode($content, true);
+        return $resp;
         $return = [
             'd' => floor($resp['rows'][0]['elements'][0]['distance']['value']/1000),
             't' => floor($resp['rows'][0]['elements'][0]['duration']['value']/60)
         ];
+        if(count($return) < 1){
+            $this->log('File: '.__FILE__.' at line '.__LINE__.' Err:- '.json_encode($resp));
+            throw new Exception('System could not understand your Address.');
+            return false;
+        }
         return  $return;
+    }
+    function GetLonLat($location_name){
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_URL, MAP_LOC_ENDPOINT . 'address='.urlencode($location_name).'&key='.$this->maps_key);
+        $content = curl_exec($ch);
+        $resp = json_decode($content, true);
+        $return = !empty($resp['results'][0]['geometry']['location'])?$resp['results'][0]['geometry']['location']:[];
+        if(count($return) < 1){
+            $this->log('File: '.__FILE__.' at line '.__LINE__.' Err:- '.json_encode($resp));
+            throw new Exception('System could not understand your Address.');
+            return false;
+        }
+        return $return;
     }
     function FindUserById($id){
         $statement = $this->CreateConnection()->prepare("SELECT * FROM `p_users` WHERE `UserId`=:a AND `UserStatus` = '1'");
