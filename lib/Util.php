@@ -306,10 +306,22 @@ class Util{
         endforeach;
         return implode(', ',$rtn);
     }
+    function DiscountItem($meta, $key = 'Product'){
+        $v = $meta[ $key . 'DiscountValue'];
+        if($v < 1 ){
+            return floor($meta[ $key . 'Price']);
+        }
+        if($meta[ $key . 'DiscountType'] == '1003'){//%
+            return floor( ((100-$v) * $meta[ $key . 'Price'])/100 );
+        }
+        if($meta[ $key . 'DiscountType'] == '1004'){
+            floor(($meta[ $key . 'Price'] - $v));
+        }
+    }
     function ApplyDiscount($meta){
         $v = $meta['ProductDiscountValue'];
         if($v < 1 ){
-            return $meta['ProductPrice'];
+            return $this->ApplyMarkUp($meta, $meta['ProductPrice']);
         }
         if($meta['ProductDiscountType'] == '1003'){//%
             return $this->ApplyMarkUp($meta, (((100-$v)*$meta['ProductPrice'])/100));
@@ -320,7 +332,8 @@ class Util{
     function ApplyDiscountHoliday($meta){
         $v = $meta['PackageDiscountValue'];
         if($v < 1 ){
-            return $meta['PackagePrice'];
+            // return $meta['PackagePrice'];
+            return $this->ApplyMarkUp($meta, $meta['PackagePrice'], 'Package');
         }
         if($meta['PackageDiscountType'] == '1003'){//%
             return $this->ApplyMarkUp($meta, (((100-$v)*$meta['PackagePrice'])/100), 'Package');
@@ -334,7 +347,8 @@ class Util{
     function ApplyDiscountHotel($meta){
         $v = $meta['RoomDiscountValue'];
         if($v < 1 ){
-            return $meta['RoomPrice'];
+            // return $meta['RoomPrice'];
+            return $this->ApplyMarkUp($meta, $meta['RoomPrice'], 'Room');
         }
         if($meta['RoomDiscountType'] == '1003'){//%
             return $this->ApplyMarkUp($meta, (((100-$v)*$meta['RoomPrice'])/100), 'Room');
@@ -348,7 +362,8 @@ class Util{
     function ApplyDiscountCar($meta){
         $v = $meta['CarDiscountValue'];
         if($v < 1 ){
-            return $meta['CarPrice'];
+            // return $meta['CarPrice'];
+            return $this->ApplyMarkUp($meta, $meta['CarPrice'], 'Car');
         }
         if($meta['CarDiscountType'] == '1003'){//%
             return $this->ApplyMarkUp($meta, (((100-$v)*$meta['CarPrice'])/100), 'Car');
@@ -771,7 +786,8 @@ class Util{
         curl_setopt($ch, CURLOPT_URL, MAP_ENDPOINT . 'origins='.urlencode($this->pickup).'&destinations='.urlencode($this->dropoff).'&key='.$this->maps_key);
         $content = curl_exec($ch);
         $resp = json_decode($content, true);
-        return $resp;
+        // print_r($resp);
+        // return $resp;
         $return = [
             'd' => floor($resp['rows'][0]['elements'][0]['distance']['value']/1000),
             't' => floor($resp['rows'][0]['elements'][0]['duration']['value']/60)

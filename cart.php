@@ -107,6 +107,9 @@
             border-right: 1px solid #444444;
             color: #f2f2f2;
         }
+        pre {
+            color: #bfcad6!important;
+        }
         .table_desc .cart_page table tbody tr td.product_quantity input {
             width: 60px;
             height: 40px;
@@ -206,13 +209,13 @@
                             <div class="table_desc">
                                 <div class="cart_page table-responsive" id="">
                                     <?php
-                                        try{
-                                            $calc = new ShippingCalc($conn);
-                                            $util->Show($calc->Payload());
-                                            $util->Show($calc->SendyIt(455));
-                                        }catch(Exception $e){
-                                            print $e->getMessage();
-                                        }
+                                        // try{
+                                        //     $calc = new ShippingCalc($conn);
+                                        //     $util->Show($calc->Payload());
+                                        //     $util->Show($calc->ShippingCost($_SESSION['usr']['UserId']));
+                                        // }catch(Exception $e){
+                                        //     print $e->getMessage();
+                                        // }
                                     ?>
                                     <table>
                                 <thead>
@@ -229,18 +232,45 @@
                                 </thead>
                                 <tbody>
                                     <?php 
+                                        $calc = new ShippingCalc($conn);
+                                        $shipp_message = '<p class="cart_amount"><span>Distance Based Rate:</span><b><a target="_blank" href="'.APP_ADMIN.'">LOGIN</a> to see shipping cost</b></p>';
+                                        $i_message = '<a target="_blank" href="'.APP_ADMIN.'">LOGIN HERE</a>';
                                         $shipping_cost_for_logged_in_user = 0;
+                                        try{
+                                            if( isset( $_SESSION['usr']['UserId'])){
+                                                $i_message = '<a target="_blank" href="'.APP_ADMIN.'/ecommerce-home.php">logged in as <b>'.$_SESSION['usr']['UserFullName'].'</b></a>';
+                                                $ship_arr = $calc->ShippingCost($_SESSION['usr']['UserId']);
+                                                $shipping_cost_for_logged_in_user = $ship_arr['c'];
+                                                $shipp_message = '<p class="cart_amount"><span>Distance Based Rate:</span>'.$_SESSION['cry'] .' '. $util->Forex($shipping_cost_for_logged_in_user).'</p>';
+                                            }
+                                        }catch(Exception $e){
+                                            $shipp_message = '<p class="cart_amount"><span>Distance Based Rate:</span><b><a href="#">Error:</a> '.$e->getMessage().'</b></p>';
+                                            $i_message = '<a target="_blank" href="#">'.$e->getMessage().'</a>';
+                                            $shipping_cost_for_logged_in_user = 0;
+                                        }
                                         $total_cart = [0];
+                                        $_SESSION['curr_usr_cart_comm'] = [];
                                         if(isset($_SESSION['curr_usr_cart']) && is_array($_SESSION['curr_usr_cart'])){
-                                            $shipping_cost_for_logged_in_user = 1200;
                                             foreach($_SESSION['curr_usr_cart'] as $cart_item ):
+                                                if(!empty($cart_item[0])){
                                                 $this_item_meta = $product->FindById($cart_item[0]);
-                                                $this_item_price = ($util->ApplyDiscount($this_item_meta));
+                                                $original_price = intval(str_replace(',','', $util->Forex($this_item_meta['ProductPrice'])));
+                                                
+                                                $discounted_price = intval(str_replace(',','', $util->Forex($util->DiscountItem($this_item_meta))));
+                                                $discount = floor($original_price - $discounted_price);
+                                                
+                                                $this_item_meta['ProductPrice'] = $discounted_price;
+                                                $markedup_price = str_replace(',','', $util->Forex($util->ApplyMarkUp($this_item_meta)));
+                                                $markup = floor($markedup_price - $discounted_price);
+
+                                                $this_item_price = $markedup_price;
+                                                $this_item_commission = ($markup * $cart_item[1]);
                                                 $this_item_cost = ($this_item_price*$cart_item[1]);
-                                                array_push($total_cart, $this_item_cost);                        
+                                                array_push($_SESSION['curr_usr_cart_comm'][$cart_item[0]], $this_item_commission);
+                                                array_push($total_cart, $this_item_cost);
                                     ?>
                                     <tr>
-                                    <td class="product_remove"><a href="#"><i class="fa fa-trash-o"></i></a></td>
+                                    <td class="product_remove"><a onclick="removeFromCart('<?=$cart_item[0]?>')" href="#"><i class="fa fa-trash-o"></i></a></td>
                                         <td class="product_thumb"><a href="product.php?item=<?=$cart_item[0]?>"><img style="max-width:100%;" src="<?=APP_IMG_PATH?>items/<?=$gallery->FindByTypeProduct($cart_item[0],'5003')['GalleryPath']?>" alt=""></a></td>
                                         <td class="product_name"><a href="product.php?item=<?=$cart_item[0]?>"><?=$this_item_meta['ProductName']?></a></td>
                                         <td class="product-price"><?=$_SESSION['cry'] .' '. $util->Forex($this_item_price)?></td>
@@ -277,9 +307,10 @@
                                             </select>
                                         </td>
                                         
-                                        <td class="product_total"><?=$_SESSION['cry'] .' '. $util->Forex($this_item_cost)?></td>
+                                        <td class="product_total"><?=$_SESSION['cry'] .' '. $util->Forex($this_item_cost)?>(<?=$this_item_commission?>)</td>
                                     </tr>
                                         <?php
+                                            }
                                             endforeach;
                                         }
                                         ?>
@@ -317,9 +348,9 @@
                                     </div>
                                     <div class="cart_subtotal ">
                                         <p>Shipping</p>
-                                        <p class="cart_amount"><span>Flat Rate:</span><?=$_SESSION['cry'] .' '. $util->Forex($shipping_cost_for_logged_in_user)?></p>
+                                        <?=$shipp_message?>
                                     </div>
-                                    <a href="#">Calculate shipping</a>
+                                    <?=$i_message?>
 
                                     <div class="cart_subtotal">
                                         <p>Total</p>
@@ -335,6 +366,7 @@
                     </div>
                     <!--coupon code area end-->
                 </form>
+                <?=$util->Show($_SESSION['curr_usr_cart_comm'])?>
             </div>
         </section>
         <!-- area end-->       

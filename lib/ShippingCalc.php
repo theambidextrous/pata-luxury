@@ -56,29 +56,32 @@ class ShippingCalc{
         return $res['SiteAddress'];
     }
     function ShippingCost($OrderUserId){
-        $customer_meta = $this->User($OrderUserId);
-        $route_distance_arr = [];
-        $payload = $this->GroupByVendor();
-        foreach ( $payload as $vendor => $items ){
-            $vendor_meta = $this->User($vendor);
-            $vendor_warehouse_address = $vendor_meta['UserShippingAddress'];
-            $packaging_address = $this->FindAddress();
-            $customer_address = $customer_meta['UserShippingAddress'];
-            
-            $util = new Util($vendor_warehouse_address, $packaging_address, MAPS_KEY);
-            $warehouse_to_packaging = $util->ComputeDistance()['d'];
-            
-            $util = new Util($packaging_address, $customer_address, MAPS_KEY);
-            $packaging_to_customer = $util->ComputeDistance()['d'];
-            $d = $warehouse_to_packaging + $packaging_to_customer;
-            array_push($route_distance_arr, $d);
-        }
-        $total_distance = array_sum($route_distance_arr);
-        return [
-            'd' => $total_distance,
-            'c' => floor($total_distance*S_RATE),
-            'r' => S_RATE
-        ];
+      if(empty($OrderUserId)){
+        throw new Exception('Unknown user id supplied. No associated addresss!');
+      }
+      $customer_meta = $this->User($OrderUserId);
+      $route_distance_arr = [];
+      $payload = $this->GroupByVendor();
+      foreach ( $payload as $vendor => $items ){
+          $vendor_meta = $this->User($vendor);
+          $vendor_warehouse_address = $vendor_meta['UserShippingAddress'];
+          $packaging_address = $this->FindAddress();
+          $customer_address = $customer_meta['UserShippingAddress'];
+          
+          $util = new Util($vendor_warehouse_address, $packaging_address, MAPS_KEY);
+          $warehouse_to_packaging = $util->ComputeDistance()['d'];
+          
+          $util = new Util($packaging_address, $customer_address, MAPS_KEY);
+          $packaging_to_customer = $util->ComputeDistance()['d'];
+          $d = $warehouse_to_packaging + $packaging_to_customer;
+          array_push($route_distance_arr, $d);
+      }
+      $total_distance = array_sum($route_distance_arr);
+      return [
+          'd' => $total_distance,
+          'c' => floor($total_distance*S_RATE),
+          'r' => S_RATE
+      ];
     }
     function Payload($Order_User = '', $OrderId = ''){
         $util = new Util();
@@ -117,7 +120,7 @@ class ShippingCalc{
             $ship_packaging_address = $this->FindAddress();
             $ship_cust_address = $customer_meta['UserShippingAddress'];
             /** if this cart entry has any item that is shipped by sendy */
-            if( isShipped($items) == '2003'){
+            if( $this->isShipped($items) == '2003'){
 
             }
             /** sendy postfields */
