@@ -21,7 +21,6 @@
     if( !$util->isLoggedIn() ) {
         $util->RedirectTo('cart.php');
     }
-    // $util->Show();
 ?>
 <!doctype html>
 <html class="no-js" lang="en">
@@ -156,6 +155,9 @@
         <section class="shopping_cart_area  product_black_section">
             <div class="container">
                 <div class="checkout_form">
+                    <?php
+                        $util->Show($_SESSION['curr_usr_cart_final']);
+                     ?>
                     <div class="row">
                         <div class="col-lg-4 col-md-4">
                             <form action="#">
@@ -163,21 +165,16 @@
                                 <div class="row">
                                     <div class="col-lg-12 mb-20">
                                         <p>We will use the information on your account to bill and ship your order.</p>
-                                        <p class="note">To ship to a <b>different address</b>, use the <u>"Alternative Address"</u> option in your dashboard( Dashboard->Preferences ).</p>
+                                        <p class="note">To ship to a <b>different address</b>, use the <u>"Alternative Address"</u> 
+                                        option in your dashboard( Settings -> Preferences ).</p>
                                     </div>
                                     <div class="col-lg-12 mb-20">
-                                        <label>Full Name <span>*</span></label>
-                                        <input type="text">    
+                                        <label><b>Shipping To</b></label>
+                                        <label>Name: <span><?=$_SESSION['usr']['UserFullName']?></span></label>
+                                        <label>Phone:<span><?=$_SESSION['usr']['UserPhone']?></span></label>
+                                        <label>Email:<span><?=$_SESSION['usr']['UserEmail']?></span></label>
+                                        <label>Deliver To Address:<span>:</span></label>
                                     </div>
-                                    <div class="col-lg-12 mb-20">
-                                        <label>Phone<span>*</span></label>
-                                        <input type="text"> 
-                                    </div> 
-                                    <div class="col-lg-12 mb-20">
-                                        <label> Email Address   <span>*</span></label>
-                                        <input type="text"> 
-
-                                    </div> 
                                     <div class="col-12">
                                         <div class="order-notes">
                                             <label for="order_note">Order Notes</label>

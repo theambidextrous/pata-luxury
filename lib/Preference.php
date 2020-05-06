@@ -12,14 +12,16 @@ class Preference{
     private $ReceiverAdsMails;
     private $ReceiveNews;
     private $ReceiveSuggestedItems;
+    private $ShipToAltAddress;
 
-    function __construct($Connection = null, $UserId = null, $PrefAltAddress = null, $ReceiverAdsMails = null, $ReceiveNews = null, $ReceiveSuggestedItems = null){
+    function __construct($Connection = null, $UserId = null, $PrefAltAddress = null, $ReceiverAdsMails = null, $ReceiveNews = null, $ReceiveSuggestedItems = null, $ShipToAltAddress = null){
         $this->Connection = $Connection;
         $this->UserId = $UserId;
         $this->PrefAltAddress = $PrefAltAddress;
         $this->ReceiverAdsMails = $ReceiverAdsMails;
         $this->ReceiveNews = $ReceiveNews;
         $this->ReceiveSuggestedItems = $ReceiveSuggestedItems;
+        $this->ShipToAltAddress = $ShipToAltAddress;
     }
     function ValidateFields(){
         if(empty($this->UserId)){
@@ -30,16 +32,20 @@ class Preference{
             throw new Exception("Address Field Is Blank! ");
             return false;
         }
-        if(empty($this->ReceiverAdsMails)){
+        if($this->ReceiverAdsMails == ''){
             throw new Exception("Ads flag Field Is Blank! ");
             return false;
         }
-        if(empty($this->ReceiveNews)){
+        if($this->ReceiveNews = ''){
             throw new Exception("News flag Field Is Blank! ");
             return false;
         }
-        if(empty($this->ReceiveSuggestedItems)){
+        if($this->ReceiveSuggestedItems == ''){
             throw new Exception("Suggested items flag Field Is Blank! ");
+            return false;
+        }
+        if($this->ShipToAltAddress == ''){
+            throw new Exception("Ship-to-Alt address flag Field Is Blank! ");
             return false;
         }
         return true;
@@ -47,12 +53,13 @@ class Preference{
     function Create(){
         $util = new Util();
         if( $this->ValidateFields() ){
-            $statement = $this->Connection->prepare("INSERT INTO `user_pref`(`PrefUserId`, `PrefAltAddress`, `ReceiverAdsMails`, `ReceiveNews`, `ReceiveSuggestedItems`) VALUES (:a,:b,:c,:d,:e)");
+            $statement = $this->Connection->prepare("INSERT INTO `user_pref`(`PrefUserId`, `PrefAltAddress`, `ReceiverAdsMails`, `ReceiveNews`, `ReceiveSuggestedItems`, `ShipToAltAddress`) VALUES (:a,:b,:c,:d,:e,:f)");
             $statement->bindParam(':a', $this->UserId, PDO::PARAM_STR);
             $statement->bindParam(':b', $this->PrefAltAddress, PDO::PARAM_STR);
             $statement->bindParam(':c', $this->ReceiverAdsMails, PDO::PARAM_STR);
             $statement->bindParam(':d', $this->ReceiveNews, PDO::PARAM_STR);
             $statement->bindParam(':e', $this->ReceiveSuggestedItems, PDO::PARAM_STR);
+            $statement->bindParam(':f', $this->ShipToAltAddress, PDO::PARAM_STR);
             $statement->execute();
             $rs = $statement->errorInfo();
             if($rs[0] != '00000'){
@@ -67,12 +74,13 @@ class Preference{
     function Update(){
         $util = new Util();
         if( $this->ValidateFields() ){
-            $statement = $this->Connection->prepare("UPDATE `user_pref` SET `PrefAltAddress`=:b,`ReceiverAdsMails`=:c,`ReceiveNews`=:d,`ReceiveSuggestedItems`=:e WHERE `PrefUserId`=:a");
+            $statement = $this->Connection->prepare("UPDATE `user_pref` SET `PrefAltAddress`=:b,`ReceiverAdsMails`=:c,`ReceiveNews`=:d,`ReceiveSuggestedItems`=:e, `ShipToAltAddress`=:f WHERE `PrefUserId`=:a");
             $statement->bindParam(':a', $this->UserId, PDO::PARAM_STR);
             $statement->bindParam(':b', $this->PrefAltAddress, PDO::PARAM_STR);
             $statement->bindParam(':c', $this->ReceiverAdsMails, PDO::PARAM_STR);
             $statement->bindParam(':d', $this->ReceiveNews, PDO::PARAM_STR);
             $statement->bindParam(':e', $this->ReceiveSuggestedItems, PDO::PARAM_STR);
+            $statement->bindParam(':f', $this->ShipToAltAddress, PDO::PARAM_STR);
             $statement->execute();
             $rs = $statement->errorInfo();
             if($rs[0] != '00000'){

@@ -25,10 +25,10 @@ class ShippingCalc{
         }
         return false;
     }
-    function GroupByVendor(){
+    function GroupByVendor($cart_session){
         $i = 0;
         $payload = [];
-        foreach( $_SESSION['curr_usr_cart'] as $crt ){
+        foreach( $cart_session as $crt ){
           $vendor_id = $this->Vendor($crt[0])['ProductOwner'];
           // $cart_item = [$item, $qty, $color, $size];
         	$payload[$vendor_id][$i] = [
@@ -42,6 +42,19 @@ class ShippingCalc{
         }
         return $payload;
     }
+    function FindUserAltAddress($UserId){
+      $util = new Util();
+      $statement = $this->conn->prepare("SELECT `PrefAltAddress` FROM `user_pref` WHERE `PrefUserId`=:a AND 	`ShipToAltAddress` = 1");
+      $statement->execute([':a' => $UserId]);
+      $rs = $statement->errorInfo();
+      if($rs[0] != '00000'){
+          $util->log('File: '.__FILE__.' at line '.__LINE__.' Err:- '.json_encode($rs));
+          throw new Exception('Error occured. Alternative Address Not Found. Contact Admins');
+          return false;
+      }
+      $res = $statement->fetch(PDO::FETCH_ASSOC);
+      return $res['PrefAltAddress'];
+  }
     function FindAddress(){
         $util = new Util();
         $statement = $this->conn->prepare("SELECT SiteAddress FROM `p_setting` LIMIT 1");
@@ -60,8 +73,12 @@ class ShippingCalc{
         throw new Exception('Unknown user id supplied. No associated addresss!');
       }
       $customer_meta = $this->User($OrderUserId);
+      $AltUserShippingAddress = $this->FindUserAltAddress($OrderUserId);
+      if( !empty($AltUserShippingAddress) ){
+        $customer_meta['UserShippingAddress'] = $AltUserShippingAddress;
+      }
       $route_distance_arr = [];
-      $payload = $this->GroupByVendor();
+      $payload = $this->GroupByVendor($_SESSION['curr_usr_cart']);
       foreach ( $payload as $vendor => $items ){
           $vendor_meta = $this->User($vendor);
           $vendor_warehouse_address = $vendor_meta['UserShippingAddress'];
@@ -85,7 +102,7 @@ class ShippingCalc{
     }
     function Payload($Order_User = '', $OrderId = ''){
         $util = new Util();
-        $payload = $this->GroupByVendor();
+        $payload = $this->GroupByVendor([]);
         $post_fields = [];
         // (
         //     [lXNOgSeVjn6hJtWm] => Array

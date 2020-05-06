@@ -221,13 +221,27 @@
                             <div class="table_desc">
                                 <div class="cart_page table-responsive" id="cart_items_refresh_div_mob">
                                     <?php
-                                        // try{
-                                        //     $calc = new ShippingCalc($conn);
-                                        //     $util->Show($calc->Payload());
-                                        //     $util->Show($calc->ShippingCost($_SESSION['usr']['UserId']));
-                                        // }catch(Exception $e){
-                                        //     print $e->getMessage();
-                                        // }
+                                    /**
+                                     * WRITE ORDER AND GO TO CHECKOUT
+                                     */
+                                    if( isset($_POST['go-to-checkout']) ){
+                                        try{
+                                            $calc = new ShippingCalc($conn);
+                                            $sdy_arr = $calc->ShippingCost($_SESSION['usr']['UserId']);
+                                            $_order = [
+                                                'EC'.$util->KeyGen(10,2),
+                                                $_SESSION['curr_usr_cart'],
+                                                $_SESSION['curr_usr_cart_comm'],
+                                                $sdy_arr,
+                                                $_POST['cart_totals']
+                                            ];
+                                            $_SESSION['curr_usr_cart_final'] = $_order;
+                                            $util->RedirectTo('checkout.php');
+
+                                        }catch(Exception $e){
+                                            print $e->getMessage();
+                                        }
+                                    }
                                     ?>
                                 <table>
                                 <thead>
@@ -317,7 +331,7 @@
                                             </select>
                                         </td>
                                         
-                                        <td class="product_total"><?=$_SESSION['cry'] .' '. $util->Forex($this_item_cost)?>(<?=$this_item_commission?>)</td>
+                                        <td class="product_total"><?=$_SESSION['cry'] .' '. $util->Forex($this_item_cost)?></td>
                                     </tr>
                                         <?php
                                             }
@@ -367,8 +381,11 @@
                                         <p class="cart_amount"><?=$_SESSION['cry'] .' '. $util->Forex(array_sum($total_cart)+$shipping_cost_for_logged_in_user)?></p>
                                     </div>
                                     <div class="checkout_btn">
-                                    <?php if( $util->isLoggedIn() ) { ?>
-                                        <a href="checkout.php">Proceed to Checkout</a>
+                                    <?php if( $util->isLoggedIn() && $total_cart > 0 ) { ?>
+                                        <form action="" method="post">
+                                        <input type="hidden" name="cart_totals" value="<?=$util->Forex(array_sum($total_cart)+$shipping_cost_for_logged_in_user)?>"/>
+                                        <button name="go-to-checkout" class="checkout_btn" trype="submit">Proceed to Checkout</button>
+                                        </form>
                                     <?php }else{ ?>
                                         <a href="#" data-toggle="modal" id="btn_popup_login" data-target="#popup_login">Checkout</a>
                                     <?php } ?>
@@ -380,7 +397,7 @@
                     </div>
                     <!--coupon code area end-->
                 </form>
-                <?=$util->Show($_SESSION['curr_usr_cart_comm'])?>
+                <?=//$util->Show($_SESSION['curr_usr_cart_comm'])?>
             </div>
         </section>
         <!-- area end-->       

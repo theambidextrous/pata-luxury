@@ -26,7 +26,7 @@
                         if(isset($_POST['save-pref'])){
                             /** manage user */
                             try{
-                                $pref = new Preference($util->CreateConnection(), $_SESSION['usr']['UserId'], $_POST['PrefAltAddress'], $_POST['ReceiverAdsMails'],$_POST['ReceiveNews'],$_POST['ReceiveSuggestedItems']);
+                                $pref = new Preference($util->CreateConnection(), $_SESSION['usr']['UserId'], $_POST['PrefAltAddress'], $_POST['ReceiverAdsMails'],$_POST['ReceiveNews'],$_POST['ReceiveSuggestedItems'], $_POST['ShipToAltAddress']);
                                 if(!empty($p)){
                                     if($pref->Update()){
                                         $util->FlashMessage('Preference Updated Successfully!');
@@ -36,6 +36,7 @@
                                         $util->FlashMessage('Preference Updated Successfully!');
                                     }
                                 }
+                                $util->RedirectTo('ecommerce-home.php?act=pref');
                             }catch(Exception $e ){
                                 $util->FlashMessage($e->getMessage(), 0);
                             }
@@ -43,7 +44,7 @@
                     ?>
                     <form method="post" action="" enctype="multipart/form-data">
                         <div class="row">
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <div class="form-group m-b-20">
                                     <label>Alternative Shipping Address(e.g a friend's to deliver gifts)<span class="text-danger">*</span></label>
                                     <input type="text" value="<?=$_SESSION['form']['PrefAltAddress']?>" class="form-control" id="PrefAltAddress" name="PrefAltAddress">
@@ -69,7 +70,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <div class="form-group m-b-20">
                                     <label>Receiver News<span class="text-danger">*</span></label>
                                     <select class="form-control select2" name="ReceiveNews" id="ReceiveNews">
@@ -88,6 +89,8 @@
                                         ?>
                                     </select>
                                 </div>
+                            </div>
+                            <div class="col-lg-4">
                                 <div class="form-group m-b-20">
                                     <label>Receive Suggested Items<span class="text-danger">*</span></label>
                                     <select class="form-control select2" name="ReceiveSuggestedItems" id="ReceiveSuggestedItems">
@@ -96,6 +99,26 @@
                                                 print '<option selected value="1">Yes</option>';
                                                 print '<option value="0">No</option>';
                                             }else if($_SESSION['form']['ReceiveSuggestedItems'] == 0){
+                                                print '<option value="1">Yes</option>';
+                                                print '<option selected value="0">No</option>'; 
+                                            }else{
+                                                print '<option value="3">Select one</option>';
+                                                print '<option value="1">Yes</option>';
+                                                print '<option selected value="0">No</option>';
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group m-b-20">
+                                    <label>Deliver My Orders to Alternative Address Above<span class="text-danger">*</span></label>
+                                    <select class="form-control select2" name="ShipToAltAddress" id="ShipToAltAddress">
+                                        <?php
+                                            if($_SESSION['form']['ShipToAltAddress'] == 1){
+                                                print '<option selected value="1">Yes</option>';
+                                                print '<option value="0">No</option>';
+                                            }else if($_SESSION['form']['ShipToAltAddress'] == 0){
                                                 print '<option value="1">Yes</option>';
                                                 print '<option selected value="0">No</option>'; 
                                             }else{

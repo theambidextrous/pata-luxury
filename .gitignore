@@ -11,7 +11,7 @@ db/sql
 javascripts/bundles
 stylesheets/bundles
 Constants.php
+Pay.php
 **/assets
 **/data-dir
 **/mail
-Pay.php

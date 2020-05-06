@@ -1,11 +1,11 @@
 <?php
 /**
- * @filename: EcommerceOrder.php
- * @role: EcommerceOrder object
+ * @filename: ProductOrder.php
+ * @role: ProductOrder object
  * @author: avatar
  * @license : Proriatery
  */
-class EcommerceOrder{
+class ProductOrder{
     private $Connection;
     private $OrderId;
     private $UserId;
@@ -13,8 +13,11 @@ class EcommerceOrder{
     private $CommString;
     private $Amount;
     private $CommAmount;
+    private $ShippingDistance;
+    private $ShippingRate;
+    private $ShippingCost;
 
-    function __construct($Connection = null, $OrderId = null, $UserId = null, $ProductString = null, $CommString = null, $Amount = null, $CommAmount = null){
+    function __construct($Connection = null, $OrderId = null, $UserId = null, $ProductString = null, $CommString = null, $Amount = null, $CommAmount = null, $ShippingDistance = null, $ShippingRate = null, $ShippingCost = null){
         $this->Connection = $Connection;
         $this->OrderId = $OrderId;
         $this->UserId = $UserId;
@@ -22,6 +25,9 @@ class EcommerceOrder{
         $this->CommString = $CommString;
         $this->Amount = $Amount;
         $this->CommAmount = $CommAmount;
+        $this->ShippingDistance = $ShippingDistance;
+        $this->ShippingRate = $ShippingRate;
+        $this->ShippingCost = $ShippingCost;
     }
     function ValidateFields(){
         if(empty($this->OrderId)){
@@ -44,18 +50,35 @@ class EcommerceOrder{
             throw new Exception("Amount Field Is Blank! ");
             return false;
         }
+
+        if(empty($this->ShippingDistance)){
+            throw new Exception("Shipping Route Field Is Blank! ");
+            return false;
+        }
+        if(empty($this->ShippingRate)){
+            throw new Exception("Shipping Rate Field Is Blank! ");
+            return false;
+        }
+        if(empty($this->ShippingCost)){
+            throw new Exception("Shipping Cost Field Is Blank! ");
+            return false;
+        }
+
         return true;
     }
     function Create(){
         $util = new Util();
         if( $this->ValidateFields() ){
-            $statement = $this->Connection->prepare("INSERT INTO `orders_ecommerce`(`OrderId`, `UserId`, `ProductString`, `CommString` `Amount`, `CommAmount`) VALUES (:a,:b,:c,:d,:e,:f)");
+            $statement = $this->Connection->prepare("INSERT INTO `orders_ecommerce`(`OrderId`, `UserId`, `ProductString`, `CommString`, `Amount`, `CommAmount`, `ShippingDistance`, `ShippingRate`, `ShippingCost`) VALUES (:a,:b,:c,:d,:e,:f,:g,:h,:i)");
             $statement->bindParam(':a', $this->OrderId, PDO::PARAM_STR);
             $statement->bindParam(':b', $this->UserId, PDO::PARAM_STR);
             $statement->bindParam(':c', $this->ProductString, PDO::PARAM_STR);
             $statement->bindParam(':d', $this->CommString, PDO::PARAM_STR);
             $statement->bindParam(':e', $this->Amount, PDO::PARAM_STR);
             $statement->bindParam(':f', $this->CommAmount, PDO::PARAM_STR);
+            $statement->bindParam(':g', $this->ShippingDistance, PDO::PARAM_STR);
+            $statement->bindParam(':h', $this->ShippingRate, PDO::PARAM_STR);
+            $statement->bindParam(':i', $this->ShippingCost, PDO::PARAM_STR);
             $statement->execute();
             $rs = $statement->errorInfo();
             if($rs[0] != '00000'){
@@ -70,13 +93,16 @@ class EcommerceOrder{
     function Update(){
         $util = new Util();
         if( $this->ValidateFields() ){
-            $statement = $this->Connection->prepare("UPDATE `orders_ecommerce` SET `UserId`=:b,`ProductString`=:c, `CommString`=:d, `Amount`=:e,`CommAmount`=:f WHERE `OrderId`=:a");
+            $statement = $this->Connection->prepare("UPDATE `orders_ecommerce` SET `UserId`=:b,`ProductString`=:c,`CommString`=:d,`Amount`=:e,`CommAmount`=:f,`ShippingDistance`=:g,`ShippingRate`=:h,`ShippingCost`=:i WHERE `OrderId`=:a");
             $statement->bindParam(':a', $this->OrderId, PDO::PARAM_STR);
             $statement->bindParam(':b', $this->UserId, PDO::PARAM_STR);
             $statement->bindParam(':c', $this->ProductString, PDO::PARAM_STR);
             $statement->bindParam(':d', $this->CommString, PDO::PARAM_STR);
             $statement->bindParam(':e', $this->Amount, PDO::PARAM_STR);
             $statement->bindParam(':f', $this->CommAmount, PDO::PARAM_STR);
+            $statement->bindParam(':g', $this->ShippingDistance, PDO::PARAM_STR);
+            $statement->bindParam(':h', $this->ShippingRate, PDO::PARAM_STR);
+            $statement->bindParam(':i', $this->ShippingCost, PDO::PARAM_STR);
             $statement->execute();
             $rs = $statement->errorInfo();
             if($rs[0] != '00000'){
