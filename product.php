@@ -256,7 +256,7 @@
                                 </div>
                                 <div class="product_price">
                                     <?php if($product_meta['ProductDiscountValue'] > 0){?>
-                                        <span class="old_price"><?=$_SESSION['cry'] .' ' .$util->Forex($product_meta['ProductPrice'])?></span>
+                                        <span class="old_price"><?=$_SESSION['cry'] .' ' .$util->Forex($util->ApplyMarkUp($product_meta, $product_meta['ProductPrice']))?></span>
                                     <?php } ?>
                                         <span class="current_price"><?=$_SESSION['cry'] .' ' .$util->Forex($util->ApplyDiscount($product_meta))?></span>
                                 </div>

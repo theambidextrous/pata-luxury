@@ -1,4 +1,5 @@
 <?php 
+session_start();
 require_once '../mail/autoload.php';
 require_once '../lib/BladeSMS.php';
 require_once '../lib/Util.php';
@@ -6,6 +7,9 @@ $util = new Util();
 require_once '../lib/User.php';
 require_once '../lib/Otp.php';
 $otp = new Otp($util->CreateConnection());
+if(isset($_SESSION['usr']['UserId'])){
+	$util->RedirectTo('ecommerce-home.php');
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -78,11 +82,14 @@ $otp = new Otp($util->CreateConnection());
 
 										}else{
 											//create sessions
-											session_start();
+											// session_start();
 											$user = new User($util->CreateConnection());
 											$UserMeta = $user->FindByEmail($in_user);
 											$_SESSION['usr'] = $UserMeta;
 											$otp->LogAccess($in_user, 1);
+											if(isset($_SESSION['prev_on_pg']) && $_SESSION['prev_on_pg'] != ''){
+												$util->RedirectTo($_SESSION['prev_on_pg']);
+											}
 											$util->RedirectTo('ecommerce-home.php');
 										}
 									}else{

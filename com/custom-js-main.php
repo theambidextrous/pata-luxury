@@ -1,6 +1,7 @@
 <script>
 $(document).ready(function(){
-    removeFromCart = function(ProductId){
+    removeFromCart = function(ProductId, extra_div = ''){
+        waitingDialog.show('Contacting server... Please wait',{headerText:'<?=$settings['SiteName']?> Notifications',headerSize: 6,dialogSize:'sm'});
         dataString = "ProductId="+ProductId;
         $.ajax({
             type: 'post',
@@ -11,6 +12,14 @@ $(document).ready(function(){
                 if(rtn.hasOwnProperty("MSG")){
                     $("#cart_items_refresh_div").load(window.location.href + " #cart_items_refresh_div" );
                     $("#cart_items_refresh_div_mob").load(window.location.href + " #cart_items_refresh_div_mob" );
+                    waitingDialog.hide();
+                    if( extra_div !== ''){
+                        $("#" + extra_div).load(window.location.href + " #" + extra_div ); 
+                        waitingDialog.hide();
+                        setTimeout(function(){
+                            window.location.reload();
+                        }, 1000)
+                    }
                     return;
                 }
             }
@@ -280,3 +289,23 @@ $(document).ready(function(){
     </div>
 </div> 
 <!-- modal area start-->
+<!-- login pop up -->
+<div class="modal fade" id="popup_login" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="min-width:10%;width:50%;" role="document">
+        <div class="modal-content" style="min-width:10%;width:100%;text-align:center;">
+            <div class="modal_body" style="padding: 6px 7px 6px 7px;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <p style="text-align:center;">You must login to proceed</p>
+                            <div style="text-align:center;" class="checkout_btn">
+                                <a style="text-align:center;" href="<?=APP_ADMIN?>">Login Here</a>
+                            </div>
+                        </div> 
+                    </div>     
+                </div>
+            </div>    
+        </div>
+    </div>
+</div> 
+<!-- end login -->

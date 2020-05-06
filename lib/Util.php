@@ -306,39 +306,47 @@ class Util{
         endforeach;
         return implode(', ',$rtn);
     }
+    function isLoggedIn(){
+        if( isset( $_SESSION['usr']['UserId'])){
+            return true;
+        }
+        return false;
+    }
     function DiscountItem($meta, $key = 'Product'){
         $v = $meta[ $key . 'DiscountValue'];
-        if($v < 1 ){
-            return floor($meta[ $key . 'Price']);
+        if($v > 0 ){
+            if($meta[ $key . 'DiscountType'] == '1003'){//%
+                return floor( ((100-$v) * $meta[ $key . 'Price'])/100 );
+            }
+            if($meta[ $key . 'DiscountType'] == '1004'){
+                floor(($meta[ $key . 'Price'] - $v));
+            }
         }
-        if($meta[ $key . 'DiscountType'] == '1003'){//%
-            return floor( ((100-$v) * $meta[ $key . 'Price'])/100 );
-        }
-        if($meta[ $key . 'DiscountType'] == '1004'){
-            floor(($meta[ $key . 'Price'] - $v));
-        }
+        return floor($meta[ $key . 'Price']);
     }
     function ApplyDiscount($meta){
         $v = $meta['ProductDiscountValue'];
-        if($v < 1 ){
+        // return $v;
+        if($v > 0 ){
+            if($meta['ProductDiscountType'] == '1003'){//%
+                return $this->ApplyMarkUp($meta, (((100-$v)*$meta['ProductPrice'])/100));
+            }elseif($meta['ProductDiscountType'] == '1004'){
+                return $this->ApplyMarkUp($meta, (floatval($meta['ProductPrice']) - floatval($v)));
+            }
+        }else{
             return $this->ApplyMarkUp($meta, $meta['ProductPrice']);
-        }
-        if($meta['ProductDiscountType'] == '1003'){//%
-            return $this->ApplyMarkUp($meta, (((100-$v)*$meta['ProductPrice'])/100));
-        }elseif($meta['ProductDiscountType'] == '1004'){
-            return $this->ApplyMarkUp($meta, ($meta['ProductPrice'] - $v));
         }
     }
     function ApplyDiscountHoliday($meta){
         $v = $meta['PackageDiscountValue'];
-        if($v < 1 ){
-            // return $meta['PackagePrice'];
+        if($v > 0 ){
+            if($meta['PackageDiscountType'] == '1003'){//%
+                return $this->ApplyMarkUp($meta, (((100-$v)*$meta['PackagePrice'])/100), 'Package');
+            }elseif($meta['PackageDiscountType'] == '1004'){
+                return $this->ApplyMarkUp($meta, ($meta['PackagePrice'] - $v), 'Package');
+            }
+        }else{
             return $this->ApplyMarkUp($meta, $meta['PackagePrice'], 'Package');
-        }
-        if($meta['PackageDiscountType'] == '1003'){//%
-            return $this->ApplyMarkUp($meta, (((100-$v)*$meta['PackagePrice'])/100), 'Package');
-        }elseif($meta['PackageDiscountType'] == '1004'){
-            return $this->ApplyMarkUp($meta, ($meta['PackagePrice'] - $v), 'Package');
         }
     }
     function ToMinor($in){
@@ -346,14 +354,14 @@ class Util{
     }
     function ApplyDiscountHotel($meta){
         $v = $meta['RoomDiscountValue'];
-        if($v < 1 ){
-            // return $meta['RoomPrice'];
+        if($v > 0 ){
+            if($meta['RoomDiscountType'] == '1003'){//%
+                return $this->ApplyMarkUp($meta, (((100-$v)*$meta['RoomPrice'])/100), 'Room');
+            }elseif($meta['RoomDiscountType'] == '1004'){
+                return $this->ApplyMarkUp($meta, ($meta['RoomPrice'] - $v), 'Room');
+            }
+        }else{
             return $this->ApplyMarkUp($meta, $meta['RoomPrice'], 'Room');
-        }
-        if($meta['RoomDiscountType'] == '1003'){//%
-            return $this->ApplyMarkUp($meta, (((100-$v)*$meta['RoomPrice'])/100), 'Room');
-        }elseif($meta['RoomDiscountType'] == '1004'){
-            return $this->ApplyMarkUp($meta, ($meta['RoomPrice'] - $v), 'Room');
         }
     }
     function RemoveStyle($in){
@@ -361,26 +369,26 @@ class Util{
     }
     function ApplyDiscountCar($meta){
         $v = $meta['CarDiscountValue'];
-        if($v < 1 ){
-            // return $meta['CarPrice'];
+        if($v > 0 ){
+            if($meta['CarDiscountType'] == '1003'){//%
+                return $this->ApplyMarkUp($meta, (((100-$v)*$meta['CarPrice'])/100), 'Car');
+            }elseif($meta['CarDiscountType'] == '1004'){
+                return $this->ApplyMarkUp($meta, ($meta['CarPrice'] - $v), 'Car');
+            }
+        }else{
             return $this->ApplyMarkUp($meta, $meta['CarPrice'], 'Car');
-        }
-        if($meta['CarDiscountType'] == '1003'){//%
-            return $this->ApplyMarkUp($meta, (((100-$v)*$meta['CarPrice'])/100), 'Car');
-        }elseif($meta['CarDiscountType'] == '1004'){
-            return $this->ApplyMarkUp($meta, ($meta['CarPrice'] - $v), 'Car');
         }
     }
     function ApplyMarkUp($meta, $price, $key = 'Product'){
         $v = $meta[ $key . 'CommisionValue'];
-        if($v < 1 ){
-            return $price;
+        if($v > 0 ){
+            if($meta[ $key . 'CommisionType'] == '3003'){//%
+                return (((100+$v)*$price)/100);
+            }elseif($meta[ $key . 'CommisionType'] == '3004'){
+                return ($price + $v);
+            }
         }
-        if($meta[ $key . 'CommisionType'] == '3003'){//%
-            return (((100+$v)*$price)/100);
-        }elseif($meta[ $key . 'CommisionType'] == '3004'){
-            return ($price + $v);
-        }
+        return $price;
     }
     function ValidateUploadSize($input){
         if($_FILES[$input]["size"] < 1000000){

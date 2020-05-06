@@ -1,10 +1,10 @@
 <?php
-include '/home2/fazalbou/public_html/patashopdir/lib/Util.php';
-include '/home2/fazalbou/public_html/patashopdir/lib/RoomOrder.php';
-include '/home2/fazalbou/public_html/patashopdir/lib/PackageOrder.php';
-include '/home2/fazalbou/public_html/patashopdir/lib/CarOrder.php';
-include '/home2/fazalbou/public_html/patashopdir/lib/BladeSMS.php';
-include '/home2/fazalbou/public_html/patashopdir/mail/autoload.php';
+include_once '/home2/fazalbou/public_html/patashopdir/lib/Util.php';
+include_once '/home2/fazalbou/public_html/patashopdir/lib/RoomOrder.php';
+include_once '/home2/fazalbou/public_html/patashopdir/lib/PackageOrder.php';
+include_once '/home2/fazalbou/public_html/patashopdir/lib/CarOrder.php';
+include_once '/home2/fazalbou/public_html/patashopdir/lib/BladeSMS.php';
+include_once '/home2/fazalbou/public_html/patashopdir/mail/autoload.php';
 class Pay {
     public static function Credentials(){
         // 1.Terminal ID PATA0001

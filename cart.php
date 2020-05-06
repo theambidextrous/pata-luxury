@@ -1,5 +1,9 @@
 <?php
     session_start();
+    // ini_set('display_startup_errors', 1);
+    // ini_set('display_errors', 1);
+    // error_reporting(-1);
+
     if(!isset($_SESSION['cry'])){
         $_SESSION['cry'] = 'KES';
     }
@@ -11,12 +15,20 @@
     require_once 'lib/Size.php';
     $util = new Util();
     // $util->ShowErrors();
+    if(  !$util->isLoggedIn() ){
+        $_SESSION['prev_on_pg'] = 'https://'. $_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'];
+    }else{
+        $_SESSION['prev_on_pg'] = '';
+    }
+    // print $_SESSION['prev_on_pg'];
+
     $conn = $util->CreateConnection();
     $setting = new Setting($conn);
     $settings = $setting->FindAll();
     require_once 'lib/Category.php';
     require_once 'lib/Gallery.php';
     require_once 'lib/ShippingCalc.php';
+    require_once 'lib/ProductOrder.php';
     $category = new Category($conn);
     $product = new Product($conn);
     $gallery = new Gallery($conn);
@@ -207,7 +219,7 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="table_desc">
-                                <div class="cart_page table-responsive" id="">
+                                <div class="cart_page table-responsive" id="cart_items_refresh_div_mob">
                                     <?php
                                         // try{
                                         //     $calc = new ShippingCalc($conn);
@@ -217,7 +229,7 @@
                                         //     print $e->getMessage();
                                         // }
                                     ?>
-                                    <table>
+                                <table>
                                 <thead>
                                     <tr>
                                         <th class="product_remove"></th>
@@ -230,14 +242,15 @@
                                         <th class="product_total">Total</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="cart_items_table_list">
                                     <?php 
                                         $calc = new ShippingCalc($conn);
-                                        $shipp_message = '<p class="cart_amount"><span>Distance Based Rate:</span><b><a target="_blank" href="'.APP_ADMIN.'">LOGIN</a> to see shipping cost</b></p>';
+                                        $this_item_commission = 0;
+                                        $shipp_message = '<p class="cart_amount"><span>Distance Based Rate:</span><a target="_blank" href="'.APP_ADMIN.'"><small><i>LOGIN to see shipping cost</i></small></a></p>';
                                         $i_message = '<a target="_blank" href="'.APP_ADMIN.'">LOGIN HERE</a>';
                                         $shipping_cost_for_logged_in_user = 0;
                                         try{
-                                            if( isset( $_SESSION['usr']['UserId'])){
+                                            if( $util->isLoggedIn() ){
                                                 $i_message = '<a target="_blank" href="'.APP_ADMIN.'/ecommerce-home.php">logged in as <b>'.$_SESSION['usr']['UserFullName'].'</b></a>';
                                                 $ship_arr = $calc->ShippingCost($_SESSION['usr']['UserId']);
                                                 $shipping_cost_for_logged_in_user = $ship_arr['c'];
@@ -255,22 +268,19 @@
                                                 if(!empty($cart_item[0])){
                                                 $this_item_meta = $product->FindById($cart_item[0]);
                                                 $original_price = intval(str_replace(',','', $util->Forex($this_item_meta['ProductPrice'])));
-                                                
                                                 $discounted_price = intval(str_replace(',','', $util->Forex($util->DiscountItem($this_item_meta))));
                                                 $discount = floor($original_price - $discounted_price);
-                                                
-                                                $this_item_meta['ProductPrice'] = $discounted_price;
-                                                $markedup_price = str_replace(',','', $util->Forex($util->ApplyMarkUp($this_item_meta)));
+                                                $markedup_price = str_replace(',','', $util->Forex($util->ApplyMarkUp($this_item_meta, $discounted_price)));
                                                 $markup = floor($markedup_price - $discounted_price);
 
                                                 $this_item_price = $markedup_price;
                                                 $this_item_commission = ($markup * $cart_item[1]);
                                                 $this_item_cost = ($this_item_price*$cart_item[1]);
-                                                array_push($_SESSION['curr_usr_cart_comm'][$cart_item[0]], $this_item_commission);
+                                                $_SESSION['curr_usr_cart_comm'][$cart_item[0]] = $this_item_commission;
                                                 array_push($total_cart, $this_item_cost);
                                     ?>
                                     <tr>
-                                    <td class="product_remove"><a onclick="removeFromCart('<?=$cart_item[0]?>')" href="#"><i class="fa fa-trash-o"></i></a></td>
+                                    <td class="product_remove"><a onclick="removeFromCart('<?=$cart_item[0]?>', 'cart_items_table_list')"><i class="fa fa-trash-o"></i></a></td>
                                         <td class="product_thumb"><a href="product.php?item=<?=$cart_item[0]?>"><img style="max-width:100%;" src="<?=APP_IMG_PATH?>items/<?=$gallery->FindByTypeProduct($cart_item[0],'5003')['GalleryPath']?>" alt=""></a></td>
                                         <td class="product_name"><a href="product.php?item=<?=$cart_item[0]?>"><?=$this_item_meta['ProductName']?></a></td>
                                         <td class="product-price"><?=$_SESSION['cry'] .' '. $util->Forex($this_item_price)?></td>
@@ -357,7 +367,11 @@
                                         <p class="cart_amount"><?=$_SESSION['cry'] .' '. $util->Forex(array_sum($total_cart)+$shipping_cost_for_logged_in_user)?></p>
                                     </div>
                                     <div class="checkout_btn">
+                                    <?php if( $util->isLoggedIn() ) { ?>
                                         <a href="checkout.php">Proceed to Checkout</a>
+                                    <?php }else{ ?>
+                                        <a href="#" data-toggle="modal" id="btn_popup_login" data-target="#popup_login">Checkout</a>
+                                    <?php } ?>
                                     </div>
                                     </div>
                                 </div>

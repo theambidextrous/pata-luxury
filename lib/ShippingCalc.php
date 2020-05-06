@@ -29,14 +29,14 @@ class ShippingCalc{
         $i = 0;
         $payload = [];
         foreach( $_SESSION['curr_usr_cart'] as $crt ){
-            $vendor_id = $this->Vendor($crt[0])['ProductOwner'];
-            // $cart_item = [$item, $qty, $color, $size];
+          $vendor_id = $this->Vendor($crt[0])['ProductOwner'];
+          // $cart_item = [$item, $qty, $color, $size];
         	$payload[$vendor_id][$i] = [
-                $crt[0],
-                $crt[1],
-                $crt[2],
-                $crt[3],
-                $this->ShippingType($crt[0])
+              $crt[0],
+              $crt[1],
+              $crt[2],
+              $crt[3],
+              $this->ShippingType($crt[0])
             ];
         	$i++;
         }

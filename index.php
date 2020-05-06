@@ -199,7 +199,7 @@
                                                             <h3><a href="product.php?item=<?=$ftrd['ProductId']?>"><?=$ftrd['ProductName']?></a></h3>
                                                             <div class="price_box">
                                                                 <?php if($ftrd['ProductDiscountValue'] > 0){?>
-                                                                    <span class="old_price"><?=$_SESSION['cry'] .' ' .$util->Forex($ftrd['ProductPrice'])?></span>
+                                                                    <span class="old_price"><?=$_SESSION['cry'] .' ' .$util->Forex($util->ApplyMarkUp($ftrd, $ftrd['ProductPrice']))?></span>
                                                                 <?php } ?>
                                                                 <span class="current_price"><?=$_SESSION['cry'] .' ' .$util->Forex($util->ApplyDiscount($ftrd))?></span>
                                                             </div>
@@ -255,7 +255,7 @@
                                                             <h3><a href="product.php?item=<?=$arvv['ProductId']?>"><?=$arvv['ProductName']?></a></h3>
                                                             <div class="price_box">
                                                                 <?php if($arvv['ProductDiscountValue'] > 0){?>
-                                                                    <span class="old_price"><?=$_SESSION['cry'] .' ' .$util->Forex($arvv['ProductPrice'])?></span>
+                                                                    <span class="old_price"><?=$_SESSION['cry'] .' ' .$util->Forex($util->ApplyMarkUp($arvv, $arvv['ProductPrice']))?></span>
                                                                 <?php } ?>
                                                                 <span class="current_price"><?=$_SESSION['cry'] .' ' .$util->Forex($util->ApplyDiscount($arvv))?></span>
                                                             </div>
@@ -312,7 +312,7 @@
                                                             <h3><a href="product.php?item=<?=$onsv['ProductId']?>"><?=$onsv['ProductName']?></a></h3>
                                                             <div class="price_box">
                                                                 <?php if($onsv['ProductDiscountValue'] > 0){?>
-                                                                    <span class="old_price"><?=$_SESSION['cry'] .' ' .$util->Forex($onsv['ProductPrice'])?></span>
+                                                                    <span class="old_price"><?=$_SESSION['cry'] .' ' .$util->Forex($util->ApplyMarkUp($onsv, $onsv['ProductPrice']))?></span>
                                                                 <?php } ?>
                                                                 <span class="current_price"><?=$_SESSION['cry'] .' ' .$util->Forex($util->ApplyDiscount($onsv))?></span>
                                                             </div>
@@ -404,7 +404,7 @@
                                                 <h3><a href="product.php?item=<?=$tps['ProductId']?>"><?=$tps['ProductName']?></a></h3>
                                                 <div class="price_box">
                                                     <?php if($tps['ProductDiscountValue'] > 0){?>
-                                                        <span class="old_price"><?=$_SESSION['cry'] .' ' .$util->Forex($tps['ProductPrice'])?></span>
+                                                        <span class="old_price"><?=$_SESSION['cry'] .' ' .$util->Forex($util->ApplyMarkUp($tps, $tps['ProductPrice']))?></span>
                                                     <?php } ?>
                                                     <span class="current_price"><?=$_SESSION['cry'] .' ' .$util->Forex($util->ApplyDiscount($tps))?></span>
                                                 </div>

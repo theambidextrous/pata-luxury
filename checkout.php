@@ -18,6 +18,9 @@
     $product = new Product($conn);
     $gallery = new Gallery($conn);
     $megas = $category->FindAllMegaCategory();
+    if( !$util->isLoggedIn() ) {
+        $util->RedirectTo('cart.php');
+    }
     // $util->Show();
 ?>
 <!doctype html>
